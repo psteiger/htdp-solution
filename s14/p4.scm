@@ -22,11 +22,10 @@
 ;; check if file is in a node's list of files. returns #t if so, #f otherwise
 (define (file-in? file node)
   (define (file-in-list? file file-lst)
-    (if (empty? file-lst)
-        #f
-        (if (file=? file (first file-lst))
-            #t
-            (file-in-list? file (rest file-lst)))))
+    (cond [(empty? file-lst)                #f                             ]
+          [(file=? file (first file-lst))   #t                             ]
+          [else                             (file-in-list? file 
+                                                           (rest file-lst))]))
   (let ([file-lst   (if (empty? node) empty (node-files node))])
     (file-in-list? file file-lst)))
 
@@ -34,11 +33,9 @@
 ;; checks if network has a node that has a file. returns the address of
 ;; the first node found to have the file. false if file not found.
 (define (p2p-search file network)
-  (if (empty? network)
-      #f
-      (if (file-in? file network)
-          (node-address network)
-          (p2p-search file (node-neighbor network)))))
+  (cond [(empty? network)          #f                                       ]
+        [(file-in? file network)   (node-address network)                   ]
+        [else                      (p2p-search file (node-neighbor network))]))
 
 ;; p2p-search-all : file network -> list-of-node-address
 ;; like p2p-search, but returns a list of all the nodes found.
